@@ -7,29 +7,29 @@ def loadDataSet(fileName):
 		curLine = line.strip().split('\t')
 		fltLine = list(map(float, curLine))
 		dataMat.append(fltLine)
-	return dataMat
+	return dataMat	#格式为列表嵌套
 
 def distEclud(vectA, vectB):
 	return sqrt(sum(power(vectA - vectB, 2)))
 
-def randCent(dataSet, k):
-	n = shape(dataSet)[1]
+def randCent(dataSet, k):	#随机初始化质心
+	n = shape(dataSet)[1]	#列数
 	centroids = mat(zeros((k,n)))
 	for j in range(n):
 		minJ = min(dataSet[:,j])
 		rangeJ = float(max(dataSet[:,j]) - minJ)
-		centroids[:,j] = minJ + rangeJ * random.rand(k,1)
+		centroids[:,j] = minJ + rangeJ * random.rand(k,1)	#随机生成的质心在数据边界内
 	return centroids
 
 def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
-	m = shape(dataSet)[0]
-	clusterAssment = mat(zeros((m,2)))
+	m = shape(dataSet)[0]	#行数
+	clusterAssment = mat(zeros((m,2)))	#簇分配结果矩阵，第一列为簇index，第二列为距离
 	centroids = createCent(dataSet, k)
 	clusterChanged = True
-	while clusterChanged:
+	while clusterChanged:	#反复迭代，直到所有数据点的簇分配结果不再改变
 		clusterChanged = False
 		for i in range(m):
-			minDist = inf
+			minDist = inf	#infinity
 			minIndex = -1
 			for j in range(k):
 				distJI = distMeas(centroids[j,:], dataSet[i,:])
@@ -45,8 +45,9 @@ def kMeans(dataSet, k, distMeas=distEclud, createCent=randCent):
 			centroids[cent,:] = mean(ptsInClust, axis=0)
 	return centroids, clusterAssment
 
+#show plot
+import matplotlib.pyplot as plt
 
-import matplotlib.pyplot as plt   
 def showCluster(dataSet, k, centroids, clusterAssment):
     m, dim = shape(dataSet)
 
@@ -77,6 +78,6 @@ dataSet = mat(loadDataSet('data.txt'))
 print(dataSet)
 k = 3
 centroids, clusterAssment = kMeans(dataSet, k)
-print(centroids)
+
 print(clusterAssment)
 showCluster(dataSet, k, centroids, clusterAssment)
